@@ -67,6 +67,13 @@ public class machine {
         return is_active;
     }
 
+    public machine(String device_fingerprint, String machine_name, boolean is_active, String folder_path) {
+        this.device_fingerprint = device_fingerprint;
+        this.machine_name = machine_name;
+        this.is_active = is_active;
+        this.folder_path = folder_path;
+    }
+
     public void setIs_active(boolean is_active) {
         this.is_active = is_active;
     }

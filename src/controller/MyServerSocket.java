@@ -33,26 +33,8 @@ public class MyServerSocket {
             //clients connect to server
             while(true) {
                 Socket clientSocket =  serverSocket.accept();
-                System.out.println("New client connected" + clientSocket.getInetAddress().getHostAddress());
-                NetworkInterface networkInterface = NetworkInterface.getByInetAddress(clientSocket.getInetAddress());
-                if (networkInterface != null) {
-                    byte [] macAddressBytes = networkInterface.getHardwareAddress();
-                    if(macAddressBytes != null) {
-                        StringBuilder macAddressStringBuilder = new StringBuilder();
-                        for (byte b : macAddressBytes) {
-                            macAddressStringBuilder.append(String.format("%02X:", b));
-                        }
-                        String macAddress = macAddressStringBuilder.toString().substring(0, macAddressStringBuilder.length() - 1);
-                        System.out.println("MAC address : " + macAddress);
-                        
-                    }
-                    else {
-                        System.out.println("Mac address is not available for the given ip address");
-                    }
-                }
-                else {
-                    System.out.println("network interface not found for the given ip address");
-                }
+                System.out.println("New client connected " + clientSocket.getInetAddress().getHostAddress());
+                
                 
                 ClientHandler clientHandler = new ClientHandler(clientSocket, System.currentTimeMillis()+ "", this);
                 clients.add(clientHandler);

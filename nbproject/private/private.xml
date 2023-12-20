@@ -7,17 +7,20 @@
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/controller/account_controller.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/dao/fileDAO.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/dao/machineDAO.java</file>
+            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/model/syncjob.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/filesync_server/FileSync_Server.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/dao/syncjobDAO.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/database/JDBCUtil.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/dao/synclogDAO.java</file>
-            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/filesync_server/ClientHandler.java</file>
+            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/model/machine.java</file>
+            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/controller/machine_controller.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/controller/MyServerSocket.java</file>
-            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/filesync_server/FileSyncServer.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/model/RequestType.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/model/account.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/dao/DAOInterface.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/tesst/testaccount.java</file>
+            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/controller/ClientHandler.java</file>
+            <file>file:/D:/laptrinhmang2411/FileSync_Server/src/model/file.java</file>
             <file>file:/D:/laptrinhmang2411/FileSync_Server/src/tesst/testJDBCUtil.java</file>
         </group>
     </open-files>
