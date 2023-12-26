@@ -44,4 +44,10 @@ public class MyServerSocket {
             e.printStackTrace();
         }
     }
+    public void broadCastMessage(String id) {
+        for(ClientHandler client: clients) {
+            if(!client.getId().equals(id))
+                client.SendUpdate();
+        }
+    }
 }

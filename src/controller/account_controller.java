@@ -24,8 +24,17 @@ public class account_controller {
          Map<String, String> userCredentials = accountDAO.getInstance().SelectAllToMap();
          if(userCredentials.containsKey(t.getUsername())) {
              String storedPassword = userCredentials.get(t.getUsername());
-             return storedPassword.equals(t.getPassword());
+             boolean isActive = accountDAO.getInstance().getUserActiveStatus(t.getUsername());
+             if (storedPassword.equals(t.getPassword()) && !isActive) {
+                 accountDAO.getInstance().setIsActive(t);
+             }
+             return storedPassword.equals(t.getPassword()) && !isActive;
          }
          return false;
+     }
+     public boolean setLogOut(account t) {
+         int i = accountDAO.getInstance().setIsActive(t);
+         if (i >0 ) return true;
+         else return false;
      }
 }

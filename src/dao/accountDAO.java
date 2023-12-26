@@ -23,6 +23,22 @@ public class accountDAO implements DAOInterface<account>{
     public static accountDAO getInstance() {
         return new accountDAO();
     }
+    public boolean getUserActiveStatus(String username) {
+        try {
+            Connection con = JDBCUtil.getConnection();
+            String sqlQuery = "select is_active from account where username =?";
+            PreparedStatement pst = con.prepareStatement(sqlQuery);
+            pst.setString(1, username);
+            ResultSet resultSet = pst.executeQuery();
+            if(resultSet.next()) {
+                int isActive = resultSet.getInt("is_active");
+                return isActive == 1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public Map<String, String> SelectAllToMap() {
         Map<String, String> userCredentials = new HashMap<>();
         try {
@@ -94,6 +110,29 @@ public class accountDAO implements DAOInterface<account>{
         } catch (Exception e) {
         }
         return ketQua;
+    }
+    public int setIsActive (account t) {
+        int ketQua = 0;
+        try {
+           int active = (t.isIs_active() == true) ?  1 : 0;
+            Connection con = JDBCUtil.getConnection();
+             String sql = "update account "+
+                    " set "+ 
+                     "is_active = ?"
+                   
+                    
+                    +"where username =?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, String.valueOf(active));
+            pst.setString(2, t.getUsername());
+
+            ketQua = pst.executeUpdate();
+            
+            JDBCUtil.closeConnection(con);
+        } catch (Exception e) {
+        }
+                return ketQua;
+
     }
 
     @Override
