@@ -5,6 +5,7 @@
 package filesync_server;
 
 import controller.MyServerSocket;
+import view.MainForm;
 
 
 /**
@@ -18,8 +19,11 @@ public class FileSync_Server {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
         MyServerSocket myserver = new MyServerSocket();
         myserver.startServer();
+        
+        
     }
     
 }

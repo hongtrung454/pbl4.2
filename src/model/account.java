@@ -9,10 +9,18 @@ package model;
  * @author DELL
  */
 public class account {
-    private int user_id;
     private String username;
     private String password;
     private RequestType requestType;
+    private boolean is_blocked;
+
+    public boolean isIs_blocked() {
+        return is_blocked;
+    }
+
+    public void setIs_blocked(boolean is_blocked) {
+        this.is_blocked = is_blocked;
+    }
 
     public RequestType getRequestType() {
         return requestType;
@@ -24,7 +32,7 @@ public class account {
 
     @Override
     public String toString() {
-        return "account [userid = " + user_id + ", username =" + username + ", password = " + password + ", isactive = " + is_active; // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        return "account [ , username =" + username + ", password = " + password + ", isactive = " + is_active; // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
     }
 
     public account() {
@@ -35,14 +43,14 @@ public class account {
         this.password = password;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public account(String username, String password,   boolean is_active,boolean is_blocked) {
+        this.username = username;
+        this.password = password;
+        this.is_blocked = is_blocked;
+        this.is_active = is_active;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
-    }
-
+    
     public String getUsername() {
         return username;
     }
@@ -67,10 +75,15 @@ public class account {
         this.is_active = is_active;
     }
 
-    public account(int user_id, String username, String password, boolean is_active) {
-        this.user_id = user_id;
+    public account(String username, String password, boolean is_active) {
         this.username = username;
         this.password = password;
+        this.is_active = is_active;
+    }
+
+    public account(String username, boolean is_blocked, boolean is_active) {
+        this.username = username;
+        this.is_blocked = is_blocked;
         this.is_active = is_active;
     }
     private boolean is_active;

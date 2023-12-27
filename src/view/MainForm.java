@@ -4,19 +4,78 @@
  */
 package view;
 
+import controller.MyServerSocket;
+import controller.account_controller;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Font;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import model.account;
+import model.file;
+
+
 /**
  *
  * @author DELL
  */
 public class MainForm extends javax.swing.JFrame {
+        private String path = "";
+    private MyServerSocket myServer;
 
     /**
      * Creates new form MainForm
      */
-    public MainForm() {
+    public MainForm(MyServerSocket server) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+        } catch (Exception e) {
+        }
         initComponents();
+        this.myServer = server;
+        this.setTitle("SERVER");
+        jButton3.setVisible(false);
+        jPanelFile.setVisible(true);
+        jPanelClientFileInfo.setVisible(false);
+        jPanelClient.setVisible(false);
+        jPanelSync.setVisible(false);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedDirectory = fileChooser.getSelectedFile();
+
+            String path = selectedDirectory.getAbsolutePath();
+            System.out.println(path);
+            myServer.setPath(path);
+            this.path = path;
+            showTableFiles(path, "", "");
+            jTextField3.setText(path);
+            jTextField3.setEditable(false);
+        }
+
+            
     }
 
+    public MainForm() {
+        initComponents();
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -26,41 +85,693 @@ public class MainForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jPanelGeneral = new javax.swing.JPanel();
+        jPanelClient = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jButton4 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jButton5 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
+        jPanelClientFileInfo = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable3 = new javax.swing.JTable();
+        jPanelFile = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jButton6 = new javax.swing.JButton();
+        jTextField2 = new javax.swing.JTextField();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jButton7 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        jButton9 = new javax.swing.JButton();
+        jButton10 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jTextField3 = new javax.swing.JTextField();
+        jButton12 = new javax.swing.JButton();
+        jPanelSync = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton1.setText("jButton1");
+        jPanel1.setBackground(new java.awt.Color(0, 133, 133));
+
+        jButton1.setText("CLIENTS");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(295, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(30, 30, 30))
+        jButton2.setText("FILES");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("Sync");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(84, 84, 84)
-                .addComponent(jButton1)
-                .addContainerGap(193, Short.MAX_VALUE))
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(175, 175, 175)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27)
+                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(258, Short.MAX_VALUE))
         );
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 630));
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "STT", "Username", "Is Active", "Is Blocked "
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(5);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(200);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jButton4.setText("Block/Unblock");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setLabel("Search");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton11.setText("Client's Files");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanelClientLayout = new javax.swing.GroupLayout(jPanelClient);
+        jPanelClient.setLayout(jPanelClientLayout);
+        jPanelClientLayout.setHorizontalGroup(
+            jPanelClientLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelClientLayout.createSequentialGroup()
+                .addGroup(jPanelClientLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 716, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanelClientLayout.createSequentialGroup()
+                        .addGap(101, 101, 101)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton5)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanelClientLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        jPanelClientLayout.setVerticalGroup(
+            jPanelClientLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelClientLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanelClientLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(jPanelClientLayout.createSequentialGroup()
+                .addGap(112, 112, 112)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jButton5.getAccessibleContext().setAccessibleName("Search");
+
+        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "STT", "File Name", "Size"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(jTable3);
+        if (jTable3.getColumnModel().getColumnCount() > 0) {
+            jTable3.getColumnModel().getColumn(0).setResizable(false);
+            jTable3.getColumnModel().getColumn(0).setPreferredWidth(20);
+            jTable3.getColumnModel().getColumn(1).setResizable(false);
+            jTable3.getColumnModel().getColumn(1).setPreferredWidth(200);
+        }
+
+        javax.swing.GroupLayout jPanelClientFileInfoLayout = new javax.swing.GroupLayout(jPanelClientFileInfo);
+        jPanelClientFileInfo.setLayout(jPanelClientFileInfoLayout);
+        jPanelClientFileInfoLayout.setHorizontalGroup(
+            jPanelClientFileInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelClientFileInfoLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 765, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(106, Short.MAX_VALUE))
+        );
+        jPanelClientFileInfoLayout.setVerticalGroup(
+            jPanelClientFileInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelClientFileInfoLayout.createSequentialGroup()
+                .addContainerGap(53, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 608, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "STT", "File Name", "Size", "Date Modified"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(jTable2);
+        if (jTable2.getColumnModel().getColumnCount() > 0) {
+            jTable2.getColumnModel().getColumn(0).setResizable(false);
+            jTable2.getColumnModel().getColumn(0).setPreferredWidth(20);
+            jTable2.getColumnModel().getColumn(1).setResizable(false);
+            jTable2.getColumnModel().getColumn(1).setPreferredWidth(200);
+            jTable2.getColumnModel().getColumn(3).setResizable(false);
+            jTable2.getColumnModel().getColumn(3).setHeaderValue("Date Modified");
+        }
+
+        jButton6.setLabel("Search");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "File Name", "Size", "Date Modified" }));
+
+        jButton7.setText("Add File");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
+
+        jButton8.setText("Delete File");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        jButton9.setText("Open Sync Folder");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
+        jButton10.setText("Synchronize");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel1.setText("Đường dẫn thư mục:");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setText("Tìm kiếm :");
+
+        jButton12.setText("Chọn");
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanelFileLayout = new javax.swing.GroupLayout(jPanelFile);
+        jPanelFile.setLayout(jPanelFileLayout);
+        jPanelFileLayout.setHorizontalGroup(
+            jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelFileLayout.createSequentialGroup()
+                .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelFileLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 678, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanelFileLayout.createSequentialGroup()
+                        .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanelFileLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField3))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanelFileLayout.createSequentialGroup()
+                                .addGap(66, 66, 66)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelFileLayout.createSequentialGroup()
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton6))
+                            .addComponent(jButton12))))
+                .addContainerGap(45, Short.MAX_VALUE))
+        );
+        jPanelFileLayout.setVerticalGroup(
+            jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelFileLayout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelFileLayout.createSequentialGroup()
+                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(57, 57, 57)
+                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(45, 45, 45))
+        );
+
+        javax.swing.GroupLayout jPanelSyncLayout = new javax.swing.GroupLayout(jPanelSync);
+        jPanelSync.setLayout(jPanelSyncLayout);
+        jPanelSyncLayout.setHorizontalGroup(
+            jPanelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 876, Short.MAX_VALUE)
+        );
+        jPanelSyncLayout.setVerticalGroup(
+            jPanelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 667, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanelGeneralLayout = new javax.swing.GroupLayout(jPanelGeneral);
+        jPanelGeneral.setLayout(jPanelGeneralLayout);
+        jPanelGeneralLayout.setHorizontalGroup(
+            jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelGeneralLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelClient, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(12, Short.MAX_VALUE)))
+            .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                    .addComponent(jPanelClientFileInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelSync, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jPanelGeneralLayout.setVerticalGroup(
+            jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelGeneralLayout.createSequentialGroup()
+                .addGap(0, 112, Short.MAX_VALUE)
+                .addComponent(jPanelClient, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(215, Short.MAX_VALUE)))
+            .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelClientFileInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelGeneralLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanelSync, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
+        getContentPane().add(jPanelGeneral, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 0, 870, 450));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        jPanelFile.setVisible(false);
+        jPanelSync.setVisible(false);
+        jPanelClient.setVisible(true);
+        jPanelClientFileInfo.setVisible(false);
+        ShowTableClient();
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        jPanelFile.setVisible(true);
+        jPanelSync.setVisible(false);
+        jPanelClient.setVisible(false);
+        jPanelClientFileInfo.setVisible(false);
+        showTableFiles(path, "", String.valueOf(jComboBox1.getSelectedItem()));
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        jPanelSync.setVisible(true);
+        jPanelFile.setVisible(false);
+        jPanelClient.setVisible(false);
+        jPanelClientFileInfo.setVisible(false);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            Object nameValue = jTable1.getValueAt(selectedRow, 1);
+            Object blockValue = jTable1.getValueAt(selectedRow, 3);
+            boolean isBlocked = (String.valueOf(blockValue) == "true") ? true : false;
+
+            account_controller.getInstance().doBlock(String.valueOf(nameValue), isBlocked);
+            ShowTableClient();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        String searchText = jTextField1.getText().trim();
+
+        if (!searchText.isEmpty()) {
+            // Gọi hàm tìm kiếm từ controller hoặc DAO (Data Access Object)
+            ArrayList<account> searchResults = account_controller.getInstance().searchClients(searchText);
+
+            // Xóa dữ liệu hiện tại trong bảng
+            model.setRowCount(0);
+
+            // Hiển thị kết quả tìm kiếm trong bảng
+            for (account result : searchResults) {
+                model.addRow(new Object[]{
+                    jTable1.getRowCount() + 1, result.getUsername(), result.isIs_active(), result.isIs_blocked()
+                });
+            }
+            formatTable(jTable1);
+        } else {
+            // Nếu ô tìm kiếm trống, hiển thị tất cả các tài khoản
+            ShowTableClient();
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        showTableFiles(path, jTextField2.getText().trim(), String.valueOf(jComboBox1.getSelectedItem()));
+        System.out.println(String.valueOf(jComboBox1.getSelectedItem()));
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        int result = JOptionPane.showConfirmDialog(jPanelFile, "Bạn có muốn xoá file không ?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            System.out.println("yessss");
+            int selectedRow = jTable2.getSelectedRow();
+            if (selectedRow != -1) {
+                Object FileName = jTable2.getValueAt(selectedRow, 1);
+                deleteFile(path, String.valueOf(FileName));
+                showTableFiles(path, "", "");
+            }
+        }else {
+                return;
+            }
+    }//GEN-LAST:event_jButton8ActionPerformed
+    private void deleteFile(String folderPath, String fileName) {
+        try {
+            Path filePath = Paths.get(folderPath, fileName);
+            if(Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
+            else {
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        try {
+            if(Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                File folder = new File(path);
+                if (folder.exists() && folder.isDirectory()) {
+                desktop.open(folder);
+            }
+                else {
+                    JOptionPane.showMessageDialog(jPanelFile, "Không tìm thấy folder" + path);
+                }
+            } else {
+                JOptionPane.showMessageDialog(jPanelFile, "Thiết bị không hỗ trợ mở chương trình");
+            }
+
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        myServer.broadCastMessage("");
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setCurrentDirectory(new File(path));
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            String selectedFilePath = selectedFile.getAbsolutePath();
+            copyFile(selectedFilePath, path + File.separator + selectedFile.getName());
+            showTableFiles(path, "", "");
+        }
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            Object username = jTable1.getValueAt(selectedRow, 1);
+            Object isActive = jTable1.getValueAt(selectedRow, 2);
+            boolean active = (String.valueOf(isActive) == "true") ? true : false;
+            if (!active) {
+                JOptionPane.showMessageDialog(jPanelClient, "Người dùng hiện không kết nối");
+            } else if (active) {
+                jPanelClientFileInfo.setVisible(true);
+                jPanelClient.setVisible(false);
+                jPanelFile.setVisible(false);
+                ArrayList<file> files = myServer.RequestFileInfo(String.valueOf(username));
+                DefaultTableModel modelTableFileInfo = (DefaultTableModel) jTable3.getModel();
+                modelTableFileInfo.setRowCount(0);
+                for (file f : files) {
+                    modelTableFileInfo.addRow(new Object[]{jTable3.getRowCount() + 1, f.getFile_name(), f.getSize()
+                    }
+                    );
+
+                }
+                formatTable(jTable3);
+            }
+        }
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fileChooser.showOpenDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedDirectory = fileChooser.getSelectedFile();
+
+                // Kiểm tra nếu thư mục là rỗng
+               
+                    String path = selectedDirectory.getAbsolutePath();
+                    System.out.println(path);
+                    myServer.setPath(path);
+                    this.path = path;
+                    jTextField3.setEditable(true);
+                    jTextField3.setText(path);
+                    jTextField3.setEditable(false);
+            }
+    }//GEN-LAST:event_jButton12ActionPerformed
+    private void copyFile(String sourcePath, String destinationPath) {
+        try {
+            Path source = Paths.get(sourcePath);
+            Path destination = Paths.get(destinationPath);
+            Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+        }
+    }
+    private void ShowTableClient(){
+        DefaultTableModel modelTableClient = (DefaultTableModel)jTable1.getModel();
+        ArrayList<account> clients = account_controller.getInstance().getClientList();
+        modelTableClient.setRowCount(0);
+        for (account c : clients) {
+            modelTableClient.addRow(new Object[] {
+                jTable1.getRowCount() +1, c.getUsername(), c.isIs_active(), c.isIs_blocked()
+            });
+        }
+        formatTable(jTable1);
+    }
+    private void showTableFiles(String folderPath, String searchText, String sortType) {
+        DefaultTableModel modelTableFiles = (DefaultTableModel) jTable2.getModel();
+        
+        // Lấy danh sách file từ thư mục
+        File folder = new File(folderPath);
+        File[] files = folder.listFiles();
+        switch (sortType) {
+            case "":
+                Arrays.sort(files, Comparator.comparing(File::getName));
+                break;
+            case "File Name":
+                Arrays.sort(files, Comparator.comparing(File::getName));
+                break;
+            case "Size":
+                Arrays.sort(files, Comparator.comparing(File::length));
+                break;
+            case "Date Modified":
+                Arrays.sort(files, Comparator.comparing(File::lastModified));
+                break;
+            default:
+                throw new IllegalArgumentException("sort type khong tim thay");
+        }
+        // Nếu thư mục không rỗng
+        if (files != null) {
+            modelTableFiles.setRowCount(0);
+
+            // Thêm thông tin về các file vào bảng
+            for (File file : files) {
+                if (file.getName().toLowerCase().contains(searchText.toLowerCase())) {
+
+                    modelTableFiles.addRow(new Object[]{
+                        jTable2.getRowCount() + 1,
+                        file.getName(),
+                        formatSize(file.length()), // Định dạng kích thước file
+                        formatDate(file.lastModified()) // Định dạng ngày sửa đổi
+                    });
+                }
+            }
+            formatTable(jTable2);
+
+            
+        }
+    }
+    private void formatTable(javax.swing.JTable jtable) {
+        jtable.setRowHeight(30);
+            jtable.setShowGrid(true);
+            jtable.setBackground(new Color(255, 255, 255, 255));
+            jtable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
+            jtable.getTableHeader().setOpaque(false);
+            jtable.getTableHeader().setBackground(new Color(0, 133, 133));
+            jtable.getTableHeader().setForeground(new Color(255, 255, 255));
+            jtable.setBackground(Color.WHITE);
+            Color green = new Color(0, 133, 133);
+            jtable.setSelectionBackground(green);
+            Font font = new Font("Segoe UI", Font.BOLD, 14);
+            jtable.setFont(font);
+            JTableHeader tableHeader = jtable.getTableHeader();
+            Font headerFont = new Font("Segoe UI", Font.BOLD, 18);
+            tableHeader.setFont(headerFont);
+    }
+
+// Phương thức định dạng kích thước file
+    private String formatSize(long size) {
+        String[] units = {"B", "KB", "MB", "GB", "TB"};
+        int i = 0;
+        while (size > 1024) {
+            size /= 1024;
+            i++;
+        }
+        return size + " " + units[i];
+    }
+
+// Phương thức định dạng ngày sửa đổi
+    private String formatDate(long timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        return dateFormat.format(new Date(timestamp));
+    }
     /**
      * @param args the command line arguments
      */
@@ -98,5 +809,34 @@ public class MainForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanelClient;
+    private javax.swing.JPanel jPanelClientFileInfo;
+    private javax.swing.JPanel jPanelFile;
+    private javax.swing.JPanel jPanelGeneral;
+    private javax.swing.JPanel jPanelSync;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable3;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 }

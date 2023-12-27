@@ -14,7 +14,7 @@ public class file {
     private int file_id;
     private int job_id;
     private String file_name;
-    private int size;
+    private long size;
     private RequestType requestType;
 
     public RequestType getRequestType() {
@@ -60,11 +60,11 @@ public class file {
         this.file_name = file_name;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 

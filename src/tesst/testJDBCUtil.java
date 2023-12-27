@@ -15,9 +15,9 @@ import model.account;
 public class testJDBCUtil {
     public static void main(String[] args) {
          ArrayList<account> accountset= new ArrayList<account>();
-    account account1 = new account(1, "trung", "123", true);
-    int result = accountDAO.getInstance().insert(account1);
-    account account2  = accountDAO.getInstance().selectByID(account1);
-    System.out.println(account2.toString());
+//    account account1 = new account(1, "trung", "123", true);
+//    int result = accountDAO.gettInstance().insert(account1);
+//    account account2  = accountDAO.getInstance().selectByID(account1);
+//    System.out.println(account2.toString());
     }
 }

@@ -39,6 +39,22 @@ public class accountDAO implements DAOInterface<account>{
         }
         return false;
     }
+    public boolean getUserBlockStatus(String username) {
+        try {
+            Connection con = JDBCUtil.getConnection();
+            String sqlQuery = "select is_blocked from account where username =?";
+            PreparedStatement pst = con.prepareStatement(sqlQuery);
+            pst.setString(1, username);
+            ResultSet resultSet = pst.executeQuery();
+            if(resultSet.next()) {
+                int isBlocked = resultSet.getInt("is_blocked");
+                return isBlocked == 1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public Map<String, String> SelectAllToMap() {
         Map<String, String> userCredentials = new HashMap<>();
         try {
@@ -67,13 +83,12 @@ public class accountDAO implements DAOInterface<account>{
             int active = (t.isIs_active() == true) ?  1 : 0;
             Connection con = JDBCUtil.getConnection();
             
-            String sql = "INSERT INTO account(user_id, username, password_hash, is_active) "+
-                        "VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO account( username, password_hash, is_active) "+
+                        "VALUES ( ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, String.valueOf(t.getUser_id()) );
-            pst.setString(2, t.getUsername());
-            pst.setString(3, t.getPassword());
-            pst.setString(4, String.valueOf(active));
+            pst.setString(1, t.getUsername());
+            pst.setString(2, t.getPassword());
+            pst.setString(3, String.valueOf(active));
 
             ketQua = pst.executeUpdate();
             
@@ -94,16 +109,15 @@ public class accountDAO implements DAOInterface<account>{
             
             String sql = "update account "+
                     " set "+ 
-                     " username = ?"
-                    + ", password_hash = ? "
+                    
+                     ", password_hash = ? "
                     + ", is_active = ?"
-                    +"where user_id =?";
+                    +"where username =?";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, t.getUsername());
             
-            pst.setString(2, t.getPassword());
-            pst.setString(3, String.valueOf(active));
-            pst.setString(4, String.valueOf(t.getUser_id()));
+            pst.setString(1, t.getPassword());
+            pst.setString(2, String.valueOf(active));
+            pst.setString(3, String.valueOf(t.getUsername()));
             ketQua = pst.executeUpdate();
             
             JDBCUtil.closeConnection(con);
@@ -134,7 +148,51 @@ public class accountDAO implements DAOInterface<account>{
                 return ketQua;
 
     }
+    public int setIsBlocked (String username, boolean blocked) {
+        int ketQua = 0;
+        try {
+           int doBlock = (blocked == true) ?  0 : 1;
+            Connection con = JDBCUtil.getConnection();
+             String sql = "update account "+
+                    " set "+ 
+                     "is_blocked = ?"
+                   
+                    
+                    +"where username =?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, String.valueOf(doBlock));
+            pst.setString(2, username);
 
+            ketQua = pst.executeUpdate();
+            
+            JDBCUtil.closeConnection(con);
+        } catch (Exception e) {
+        }
+                return ketQua;
+
+    }
+    public ArrayList<account> SearchClients(String searchText) {
+        ArrayList<account> searchResults = new ArrayList<>();
+        try {
+            Connection con = JDBCUtil.getConnection();
+            String sql = "select * from account where username like ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, "%" + searchText + "%");
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                String foundUsername = rs.getString("username");
+                int is_active = rs.getInt("is_active");
+                int is_blocked = rs.getInt("is_blocked");
+                
+                boolean active = (is_active == 1);
+                boolean blocked = (is_blocked == 1);
+                account account1 = new account(foundUsername,  active, blocked);
+                searchResults.add(account1);
+            }
+        } catch (Exception e) {
+        }
+        return searchResults;
+    }
     @Override
     public int delete(account t) {
         int ketQua = 0;
@@ -142,9 +200,9 @@ public class accountDAO implements DAOInterface<account>{
             Connection con = JDBCUtil.getConnection();
             
             String sql = "delete from account " +
-                    "where user_id = ?";
+                    "where username = ?";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, String.valueOf(t.getUser_id()));
+            pst.setString(1, String.valueOf(t.getUsername()));
            
             ketQua = pst.executeUpdate();
             
@@ -164,12 +222,15 @@ public class accountDAO implements DAOInterface<account>{
             
             ResultSet rs = st.executeQuery();
             while(rs.next()) {
-                int user_id = rs.getInt("user_id");
+                //int user_id = rs.getInt("user_id");
                 String username = rs.getString("username");
                 String password = rs.getString("password_hash");
                 int is_active = rs.getInt("is_active");
+                int is_blocked = rs.getInt("is_blocked");
+
                 boolean active = (is_active == 1) ? true: false;
-                account account = new account(user_id, username, password, active);
+                boolean blocked = (is_blocked == 1) ? true: false;
+                account account = new account( username, password, active, blocked);
                 ketQua.add(account);
             }
             
@@ -186,18 +247,17 @@ public class accountDAO implements DAOInterface<account>{
         try {
             Connection con = JDBCUtil.getConnection();
             
-            String sql = "select * from account where user_id = ?";
+            String sql = "select * from account where username = ?";
             PreparedStatement st = con.prepareStatement(sql);
-            st.setString(1, String.valueOf(t.getUser_id()));
+            st.setString(1, String.valueOf(t.getUsername()));
             ResultSet rs = st.executeQuery();
             
             while(rs.next()) {
-                int user_id = rs.getInt("user_id");
                 String username = rs.getString("username");
                 String password = rs.getString("password_hash");
                 int is_active = rs.getInt("is_active");
                 boolean active = (is_active == 1) ? true: false;
-                ketQua = new account(user_id, username, password, active);
+                ketQua = new account( username, password, active);
                 
             }
             JDBCUtil.closeConnection(con);

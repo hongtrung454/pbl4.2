@@ -6,7 +6,6 @@ package controller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import static controller.calculateMD5.calculateMD5OfFile;
 import java.io.BufferedReader;
@@ -20,13 +19,18 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import model.RequestType;
 import static model.RequestType.LOGIN;
 import static model.RequestType.REGISTER;
 import model.account;
+import model.file;
 import model.machine;
+import com.google.gson.JsonElement;
+import java.io.DataInputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -38,8 +42,9 @@ public class ClientHandler implements Runnable {
     private String id;
     private InputStream input;
     private MyServerSocket myServer;
-    private String path = "D:\\Folder Chung";
-    
+    private String path = "";
+    private ArrayList<file> files = new ArrayList<>();
+
     public String getId() {
         return id;
     }
@@ -47,12 +52,16 @@ public class ClientHandler implements Runnable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public ArrayList<file> getfiles() {
+        return this.files;
+    }
     private OutputStream output;
 
-    public ClientHandler(Socket mySocket, String id, MyServerSocket myServer) {
+    public ClientHandler(Socket mySocket,String path, MyServerSocket myServer) {
         this.mySocket = mySocket;
-        this.id = id;
         this.myServer = myServer;
+        this.path = path;
         try {
             this.input = mySocket.getInputStream();
             this.output = mySocket.getOutputStream();
@@ -65,25 +74,62 @@ public class ClientHandler implements Runnable {
 
         try {
             // Mở luồng đọc và ghi với client
-            byte[] buffer = new byte[1024];
-            int bytesRead;
+            DataInputStream DataInput = new DataInputStream(input);
+//            int dataLength = DataInput.readInt();
+//            byte[] buffer = new byte[dataLength];
+//            System.out.println(String.valueOf(dataLength));
+//            int bytesRead;
             String jsonData = "";
+//            StringBuilder jsonDataBuilder = new StringBuilder();
             PrintWriter writer = new PrintWriter(this.output, true);
-            while ((bytesRead = input.read(buffer)) != -1) {
-                jsonData = new String(buffer, 0, bytesRead);
+//            while((dataLength = DataInput.readInt()) != -1) {
+//                byte[] buffer = new byte[dataLength];
+//                int bytesRead = input.read(buffer);
+//                if(bytesRead != dataLength) {
+//                    throw new IOException("khong doc du du lieu");
+//                }
+//            while ((bytesRead = input.read(buffer)) != -1) {
+            while (true) {
+                int dataLength = DataInput.readInt();
+                if (dataLength == -1) {
+                    break;
+                }
+                byte[] buffer = new byte[dataLength];
+                int bytesRead = 0;
+                while (bytesRead < dataLength) {
+                    int read = input.read(buffer, bytesRead, dataLength - bytesRead);
+                    if (read == -1) {
+                        throw new IOException("khong doc du du lieu");
+                    }
+                    bytesRead += read;
+                }
+//                jsonData = new String(buffer, 0, bytesRead);
+                jsonData = new String(buffer, StandardCharsets.UTF_8);
+//                jsonDataBuilder.append(new String(buffer, 0, bytesRead));
                 //System.out.println(jsonData);
                 if (jsonData.contains("LOGIN")) {
                     processLoginRequest(jsonData, writer);
                 }
-                if (jsonData.contains("CHECK_FINGERPRINT") || jsonData.contains("INSERT_DEVICE")) {
-                    processCheckFingerprintRequest(jsonData, writer);
+                if (jsonData.contains("REGISTER")) {
+                    handleRegisterRequest(jsonData, writer);
                 }
                 if (jsonData.contains("GET_ALL_FILES")) {
                     processGetAllFilesRequest(jsonData);
                 }
-                if (jsonData.contains("SEND_FILES_FROM_CLIENT")){
-                    handleReceiveAllFilesResponse(jsonData, new BufferedReader(new InputStreamReader(mySocket.getInputStream())), writer);
+                if (jsonData.contains("SEND_FILES_FROM_CLIENT")) {
+                    if (jsonData.endsWith("\n")) {
+                        System.out.println("ket thuc voi n");
+
+//                        jsonData = jsonData.replace("\n", "").replace("\r", "");
+//                        if(jsonData.endsWith("}")) System.out.println("ket thuc dung");
+//                        else System.out.println("ket thuc sai");
+                    } else {
+                        //writer.println("LACK_INFORMATION");
+                    }
                     System.out.println(jsonData);
+                    handleReceiveAllFilesResponse(jsonData, new BufferedReader(new InputStreamReader(mySocket.getInputStream())), writer);
+
+//                    System.out.println(jsonDataBuilder.toString());
                 }
                 if (jsonData.contains("SEND_MARKED_FILES")) {
                     handleReceiveMarkedFiles(jsonData);
@@ -91,9 +137,12 @@ public class ClientHandler implements Runnable {
                 if (jsonData.contains("MARKED_FILES_INFO_FROM_CLIENT")) {
                     try {
                         handleMarkedFilesInfoFromClient(new Gson().fromJson(jsonData, JsonObject.class), writer);
- 
+
                     } catch (Exception e) {
                     }
+                }
+                if (jsonData.contains("SEND_FILES_INFO_FROM_CLIENT")) {
+                    files = handleFileInfoRequestFromServer(jsonData);
                 }
                 if (jsonData.contains("DOWNLOAD")) {
                     SendUpdate();
@@ -101,7 +150,7 @@ public class ClientHandler implements Runnable {
                 if (jsonData.contains("LOG_OUT")) {
                     handleLogoutRequest(jsonData);
                 }
-                
+
             }
 
             System.out.println("Received data from client: " + jsonData);
@@ -113,10 +162,11 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
     private void handleLogoutRequest(String jsonData) {
         account user = new account();
         try {
-             String receivedJsonData = jsonData; // Thay bằng dữ liệu JSON nhận được từ server;
+            String receivedJsonData = jsonData; // Thay bằng dữ liệu JSON nhận được từ server;
 
             // Chuyển đổi từ JSON sang đối tượng account
             Gson gson = new Gson();
@@ -126,6 +176,7 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
         }
     }
+
     private void processLoginRequest(String jsonData, PrintWriter writer) {
         // Giả sử có một hàm để chuyển đổi JSON thành object
         // và có các model như User, RequestType
@@ -145,49 +196,11 @@ public class ClientHandler implements Runnable {
         RequestType requestType = user.getRequestType();
         System.out.println(requestType);
 
-        // Xử lý yêu cầu tùy thuộc vào requestType
-        switch (requestType) {
-            case LOGIN:
-                handleLoginRequest(user, writer);
-                break;
-            case REGISTER:
-                handleRegisterRequest(user, writer);
-                break;
-            // Thêm các trường hợp khác nếu cần
-            default:
-                // Xử lý khi requestType không hợp lệ
-                break;
-        }
+        handleLoginRequest(user, writer);
+
     }
 
-    private void processCheckFingerprintRequest(String jsonData, PrintWriter writer) {
-        machine machine1 = new machine();
-        try {
-            // Dữ liệu JSON nhận được từ server
-            String receivedJsonData = jsonData; // Thay bằng dữ liệu JSON nhận được từ server;
-
-            // Chuyển đổi từ JSON sang đối tượng account
-            Gson gson = new Gson();
-            machine1 = gson.fromJson(receivedJsonData, machine.class);
-            this.id = machine1.getDevice_fingerprint();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        switch (machine1.getRequestType()) {
-            case CHECK_FINGERPRINT:
-                handleCheckFingerprintRequest(machine1, writer);
-                break;
-            case INSERT_DEVICE:
-                handleInsertDeviceRequest(machine1, writer);
-                break;
-            // Thêm các trường hợp khác nếu cần
-            default:
-                // Xử lý khi requestType không hợp lệ
-                break;
-        }
-    }
-
+    
     private void processGetAllFilesRequest(String receivedData) {
         try {
             Gson gson = new Gson();
@@ -195,45 +208,46 @@ public class ClientHandler implements Runnable {
             // xử lý thông tin user và thiết bị của user (lưu vào db, ghi log)
             account user1 = gson.fromJson(jsonObject.getAsJsonObject("account"), account.class);
 //            machine machine1 = gson.fromJson(jsonObject.getAsJsonObject("machine"), machine.class);
-            
+
             //gửi file
             File directory = new File(path);
             File[] files = directory.listFiles();
-            
+
             //tao doi tuong JSON de bieu dien list cac tap tin
             JsonObject jsonFiles = new JsonObject();
             jsonFiles.addProperty("requestType", "GET_ALL_FILES_RESPONSE");
             jsonFiles.addProperty("fileCount", files.length);
-            
+
             // tao mot array luu thong tin cho moi file
             JsonArray filesArray = new JsonArray();
-            for (File file: files) {
+            for (File file : files) {
                 JsonObject fileInfo = new JsonObject();
                 fileInfo.addProperty("fileName", file.getName());
                 fileInfo.addProperty("fileSize", file.length());
                 filesArray.add(fileInfo);
-                
+
             }
             jsonFiles.add("files", filesArray);
-            
+
             String jsonData = new Gson().toJson(jsonFiles);
             PrintWriter writer = new PrintWriter(this.output, true);
             writer.println(jsonData); // đây là gửi thông tin file
-            
+
             // gui moi file cho client 
-            for(File file: files) {
+            for (File file : files) {
                 sendFileToClient(file);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     private void sendFileToClient(File file) {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             byte[] buffer = new byte[8192]; //đlà gửi file :f  
             int bytesRead;
-            while((bytesRead = fileInputStream.read(buffer)) != -1) {
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
                 this.output.write(buffer, 0, bytesRead);
                 this.output.flush();
             }
@@ -245,16 +259,37 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
         }
     }
+
+    public ArrayList<file> handleFileInfoRequestFromServer(String data) {
+        JsonObject jsonFiles = new Gson().fromJson(data, JsonObject.class);
+        int fileCount = jsonFiles.get("fileCount").getAsInt();
+        JsonArray filesArray = jsonFiles.getAsJsonArray("files");
+        ArrayList<file> files = new ArrayList<>();
+        for (int i = 0; i < fileCount; i++) {
+            JsonObject fileInfo = filesArray.get(i).getAsJsonObject();
+            file f = new file();
+            String fileName = fileInfo.get("fileName").getAsString();
+            f.setFile_name(fileName);
+            long fileSize = fileInfo.get("fileSize").getAsLong();
+            f.setSize(fileSize);
+            String fileMD5 = fileInfo.get("fileMD5").getAsString();
+            files.add(f);
+        }
+        return files;
+    }
+
     private void handleReceiveAllFilesResponse(String data, BufferedReader reader, PrintWriter writer) {
-        try {                
+        try {
+            System.out.println("handle 10 file co duoc khong");
+
             JsonObject jsonFiles = new Gson().fromJson(data, JsonObject.class);
-                                        
+            System.out.println("handle 10 file có duoc khong 2");
 
             int fileCount = jsonFiles.get("fileCount").getAsInt();
             JsonArray filesArray = jsonFiles.getAsJsonArray("files");
             Map<String, String> serverFiles = getServerFiles();
             Map<String, String> markedFiles = new HashMap<>();
-            System.out.println("file count o day ne: " +String.valueOf(fileCount));
+            System.out.println("file count o day ne: " + String.valueOf(fileCount));
             for (int i = 0; i < fileCount; i++) {
                 JsonObject fileInfo = filesArray.get(i).getAsJsonObject();
                 String fileName = fileInfo.get("fileName").getAsString();
@@ -284,6 +319,7 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
         }
     }
+
     private void cleanupServerFiles(JsonArray clientFilesArray) {
         File serverDirectory = new File(path);
         File[] serverFiles = serverDirectory.listFiles();
@@ -309,7 +345,8 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-    private  Map<String, String> getServerFiles() {
+
+    private Map<String, String> getServerFiles() {
         Map<String, String> serverFiles = new HashMap<>();
         File serverDirectory = new File(path);
         File[] files = serverDirectory.listFiles();
@@ -323,6 +360,7 @@ public class ClientHandler implements Runnable {
 
         return serverFiles;
     }
+
     private void sendMarkedFilesInfoToClient(Map<String, String> markedFiles, PrintWriter writer) {
         JsonObject markedFilesInfo = new JsonObject();
         markedFilesInfo.addProperty("responseType", "MARKED_FILES_INFO");
@@ -339,10 +377,11 @@ public class ClientHandler implements Runnable {
 
         writer.println(new Gson().toJson(markedFilesInfo));
     }
+
     private void handleReceiveMarkedFiles(String data) {
         try {
             JsonObject jsonFiles = new Gson().fromJson(data, JsonObject.class);
-                                        System.out.println("aloaloaloaloa1111");
+            System.out.println("aloaloaloaloa1111");
 
             int fileCount = jsonFiles.get("fileCount").getAsInt();
             JsonArray filesArray = jsonFiles.getAsJsonArray("files");
@@ -351,21 +390,22 @@ public class ClientHandler implements Runnable {
             for (int i = 0; i < fileCount; i++) {
                 JsonObject fileInfo = filesArray.get(i).getAsJsonObject();
                 String fileName = fileInfo.get("fileName").getAsString();
-                
-                System.out.println("Dang nhan file duoc danh dau tu client: " +fileName);
+
+                System.out.println("Dang nhan file duoc danh dau tu client: " + fileName);
 
                 long fileSize = fileInfo.get("fileSize").getAsLong();
-                                System.out.println(String.valueOf(fileSize));
-
+                System.out.println(String.valueOf(fileSize));
 
                 receiveFile(mySocket.getInputStream(), fileName, fileSize);
             }
             // gui thong tin cho cac client khac 
             System.out.println("Da broadcast chua ?");
             myServer.broadCastMessage(id);
+
         } catch (Exception e) {
         }
     }
+
     private void receiveFile(InputStream inputStream, String fileName, long fileSize) {
         try {
             // Read file data into a byte array
@@ -421,9 +461,6 @@ public class ClientHandler implements Runnable {
     }
 
     private void handleLoginRequest(account user, PrintWriter writer) {
-        // Xử lý yêu cầu đăng nhập
-        System.out.println("check login ok");
-
         if (account_controller.getInstance().checkLogin(user)) {
             System.out.println("check login ok111111");
             writer.println("Login successful"); // Gửi phản hồi về client
@@ -433,43 +470,57 @@ public class ClientHandler implements Runnable {
         writer.println("login failed");
     }
 
-    private void handleRegisterRequest(account user, PrintWriter writer) {
-        // Xử lý yêu cầu đăng ký
-        // ...
-        writer.println("Registration successful"); // Gửi phản hồi về client
+    private void handleRegisterRequest(String jsonData, PrintWriter writer) {
+        account user = new account();
+        try {
+            // Dữ liệu JSON nhận được từ server
+            String receivedJsonData = jsonData; // Thay bằng dữ liệu JSON nhận được từ server;
+
+            // Chuyển đổi từ JSON sang đối tượng account
+            Gson gson = new Gson();
+            user = gson.fromJson(receivedJsonData, account.class);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (account_controller.getInstance().doRegister(user)) {
+            writer.println("Register successful"); // Gửi phản hồi về client
+
+        }
+        writer.println("Register failed");
     }
+
     public void SendUpdate() {
-       
+
         try {
             System.out.println("gui update cho cac client");
-            
+
             //gửi file
-            
             File directory = new File(path);
             File[] files = directory.listFiles();
-            
+
             //tao doi tuong JSON de bieu dien list cac tap tin
             JsonObject jsonFiles = new JsonObject();
             jsonFiles.addProperty("requestType", "SEND_UPDATE_FROM_SERVER");
             jsonFiles.addProperty("fileCount", files.length);
-            
+
             // tao mot array luu thong tin cho moi file
             JsonArray filesArray = new JsonArray();
-            for (File file: files) {
+            for (File file : files) {
                 JsonObject fileInfo = new JsonObject();
                 fileInfo.addProperty("fileName", file.getName());
                 fileInfo.addProperty("fileSize", file.length());
-                System.out.println("file name o trong broadcast ne: "+ file.getName());
+                System.out.println("file name o trong broadcast ne: " + file.getName());
                 fileInfo.addProperty("fileMD5", calculateMD5OfFile(file.getAbsolutePath()));
                 filesArray.add(fileInfo);
-                
+
             }
             jsonFiles.add("files", filesArray);
-            
+
             String jsonData = new Gson().toJson(jsonFiles);
             PrintWriter writer = new PrintWriter(mySocket.getOutputStream(), true);
             writer.println(jsonData); // đây là gửi thông tin file
-            
+
             // gui moi file cho client 
 //            for(File file: files) {
 //                sendFileToClient(file);
@@ -477,9 +528,9 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-    
+
     }
+
     private void handleMarkedFilesInfoFromClient(JsonObject receivedData, PrintWriter writer) {
         try {
             JsonArray markedFilesArray = receivedData.getAsJsonArray("markedFiles");
@@ -521,11 +572,12 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
     private void sendMarkedFilesToClient(String path, Map<String, String> markedFiles) {
         for (Map.Entry<String, String> entry : markedFiles.entrySet()) {
             String fileName = entry.getKey();
             String fileMD5 = entry.getValue();
-            
+
             // Construct the full path of the file
             String filePath = Paths.get(path, fileName).toString();
 
@@ -533,12 +585,17 @@ public class ClientHandler implements Runnable {
             File file = new File(filePath);
             if (file.exists()) {
                 System.out.println("Sending file: " + fileName);
-               // sendFileToServer(file, fileName);
+                // sendFileToServer(file, fileName);
                 sendFileToClient(file);
             } else {
                 System.out.println("File not found: " + fileName);
             }
         }
+    }
+
+    public void RequestFileInfo() {
+        PrintWriter writer = new PrintWriter(this.output, true);
+        writer.println("REQUEST_FILE_INFO");
     }
 //    private void sendFileToServer(File file, String fileName) {
 //        try {
