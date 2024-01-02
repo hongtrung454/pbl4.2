@@ -4,64 +4,87 @@
  */
 package model;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 /**
  *
  * @author DELL
  */
 public class synclog {
-    private int log_id;
-    private int job_id;
-    private String message;
-    private String result;
+    private int id;
+    private String username;
+    private String action;
+    private String filename;
+    private Timestamp time;
+    private String details;
+            
     private RequestType requestType;
 
     public RequestType getRequestType() {
         return requestType;
     }
 
+    public synclog(int id, String username, String action, String filename, Timestamp time, String details) {
+        this.id = id;
+        this.username = username;
+        this.action = action;
+        this.filename = filename;
+        this.time = time;
+        this.details = details;
+    }
+    
     public void setRequestType(RequestType requestType) {
         this.requestType = requestType;
     }
     public synclog() {
+    } 
+
+    public int getId() {
+        return id;
     }
 
-    public synclog(int log_id, int job_id, String message, String result) {
-        this.log_id = log_id;
-        this.job_id = job_id;
-        this.message = message;
-        this.result = result;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getLog_id() {
-        return log_id;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLog_id(int log_id) {
-        this.log_id = log_id;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public int getJob_id() {
-        return job_id;
+    public String getAction() {
+        return action;
     }
 
-    public void setJob_id(int job_id) {
-        this.job_id = job_id;
+    public void setAction(String action) {
+        this.action = action;
     }
 
-    public String getMessage() {
-        return message;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
-    public String getResult() {
-        return result;
+    public Timestamp getTime() {
+        return time;
     }
 
-    public void setResult(String result) {
-        this.result = result;
+    public void setTime(Timestamp time) {
+        this.time = time;
     }
-    
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
 }

@@ -6,6 +6,7 @@ package view;
 
 import controller.MyServerSocket;
 import controller.account_controller;
+import controller.log_controller;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Font;
@@ -26,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import model.account;
 import model.file;
+import model.synclog;
 
 
 /**
@@ -48,7 +50,6 @@ public class MainForm extends javax.swing.JFrame {
         initComponents();
         this.myServer = server;
         this.setTitle("SERVER");
-        jButton3.setVisible(false);
         jPanelFile.setVisible(true);
         jPanelClientFileInfo.setVisible(false);
         jPanelClient.setVisible(false);
@@ -67,6 +68,8 @@ public class MainForm extends javax.swing.JFrame {
             showTableFiles(path, "", "");
             jTextField3.setText(path);
             jTextField3.setEditable(false);
+            log_controller.getInstance().setPath(path);
+            log_controller.getInstance().initFolder();
         }
 
             
@@ -88,7 +91,7 @@ public class MainForm extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jButton13 = new javax.swing.JButton();
         jPanelGeneral = new javax.swing.JPanel();
         jPanelClient = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -115,6 +118,8 @@ public class MainForm extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jButton12 = new javax.swing.JButton();
         jPanelSync = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTable4 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -135,10 +140,10 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Sync");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        jButton13.setText("LOG");
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                jButton13ActionPerformed(evt);
             }
         });
 
@@ -148,7 +153,7 @@ public class MainForm extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,9 +162,9 @@ public class MainForm extends javax.swing.JFrame {
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(27, 27, 27)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(258, Short.MAX_VALUE))
+                .addGap(28, 28, 28)
+                .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(254, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 630));
@@ -250,8 +255,6 @@ public class MainForm extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jButton5.getAccessibleContext().setAccessibleName("Search");
-
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
@@ -291,7 +294,7 @@ public class MainForm extends javax.swing.JFrame {
         jPanelClientFileInfoLayout.setVerticalGroup(
             jPanelClientFileInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelClientFileInfoLayout.createSequentialGroup()
-                .addContainerGap(53, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 608, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -333,6 +336,11 @@ public class MainForm extends javax.swing.JFrame {
         });
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "File Name", "Size", "Date Modified" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("Add File");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
@@ -409,7 +417,7 @@ public class MainForm extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jButton6))
                             .addComponent(jButton12))))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
         jPanelFileLayout.setVerticalGroup(
             jPanelFileLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -441,15 +449,43 @@ public class MainForm extends javax.swing.JFrame {
                 .addGap(45, 45, 45))
         );
 
+        jTable4.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Username", "Action", "Filename", "Time", "Details"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(jTable4);
+        if (jTable4.getColumnModel().getColumnCount() > 0) {
+            jTable4.getColumnModel().getColumn(0).setPreferredWidth(20);
+            jTable4.getColumnModel().getColumn(3).setPreferredWidth(100);
+        }
+
         javax.swing.GroupLayout jPanelSyncLayout = new javax.swing.GroupLayout(jPanelSync);
         jPanelSync.setLayout(jPanelSyncLayout);
         jPanelSyncLayout.setHorizontalGroup(
             jPanelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 876, Short.MAX_VALUE)
+            .addGroup(jPanelSyncLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 864, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanelSyncLayout.setVerticalGroup(
             jPanelSyncLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 667, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelSyncLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 608, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanelGeneralLayout = new javax.swing.GroupLayout(jPanelGeneral);
@@ -463,8 +499,8 @@ public class MainForm extends javax.swing.JFrame {
             .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanelGeneralLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jPanelFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(12, Short.MAX_VALUE)))
+                    .addComponent(jPanelFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
             .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanelGeneralLayout.createSequentialGroup()
                     .addComponent(jPanelClientFileInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -478,13 +514,13 @@ public class MainForm extends javax.swing.JFrame {
         jPanelGeneralLayout.setVerticalGroup(
             jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelGeneralLayout.createSequentialGroup()
-                .addGap(0, 112, Short.MAX_VALUE)
+                .addGap(0, 65, Short.MAX_VALUE)
                 .addComponent(jPanelClient, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanelGeneralLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jPanelFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(215, Short.MAX_VALUE)))
+                    .addContainerGap(168, Short.MAX_VALUE)))
             .addGroup(jPanelGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanelGeneralLayout.createSequentialGroup()
                     .addContainerGap()
@@ -519,13 +555,6 @@ public class MainForm extends javax.swing.JFrame {
         showTableFiles(path, "", String.valueOf(jComboBox1.getSelectedItem()));
         
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        jPanelSync.setVisible(true);
-        jPanelFile.setVisible(false);
-        jPanelClient.setVisible(false);
-        jPanelClientFileInfo.setVisible(false);
-    }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
     int selectedRow = jTable1.getSelectedRow();
@@ -659,23 +688,37 @@ public class MainForm extends javax.swing.JFrame {
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int result = fileChooser.showOpenDialog(this);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = fileChooser.showOpenDialog(this);
 
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedDirectory = fileChooser.getSelectedFile();
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedDirectory = fileChooser.getSelectedFile();
 
-                // Kiểm tra nếu thư mục là rỗng
-               
-                    String path = selectedDirectory.getAbsolutePath();
-                    System.out.println(path);
-                    myServer.setPath(path);
-                    this.path = path;
-                    jTextField3.setEditable(true);
-                    jTextField3.setText(path);
-                    jTextField3.setEditable(false);
-            }
+            // Kiểm tra nếu thư mục là rỗng
+            String path = selectedDirectory.getAbsolutePath();
+            System.out.println(path);
+            myServer.setPath(path);
+            myServer.setPathToAllThread(path);
+            this.path = path;
+            jTextField3.setEditable(true);
+            jTextField3.setText(path);
+            jTextField3.setEditable(false);
+            showTableFiles(path, "", "");
+
+        }
     }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        jPanelFile.setVisible(false);
+        jPanelSync.setVisible(true);
+        jPanelClient.setVisible(false);
+        jPanelClientFileInfo.setVisible(false);
+        showTableLog();
+    }//GEN-LAST:event_jButton13ActionPerformed
     private void copyFile(String sourcePath, String destinationPath) {
         try {
             Path source = Paths.get(sourcePath);
@@ -737,6 +780,18 @@ public class MainForm extends javax.swing.JFrame {
 
             
         }
+    }
+    private void showTableLog() {
+        DefaultTableModel modelTableLog = (DefaultTableModel)jTable4.getModel();
+        ArrayList<synclog> logs = log_controller.getInstance().getLogList();
+        modelTableLog.setRowCount(0);
+        for (synclog log : logs) {
+            modelTableLog.addRow(new Object[] {
+                log.getId(), log.getUsername(), log.getAction(), log.getFilename(),
+                    log.getTime(), log.getDetails()
+            });
+        }
+        formatTable(jTable4);
     }
     private void formatTable(javax.swing.JTable jtable) {
         jtable.setRowHeight(30);
@@ -812,8 +867,8 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
@@ -832,9 +887,11 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
+    private javax.swing.JTable jTable4;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;

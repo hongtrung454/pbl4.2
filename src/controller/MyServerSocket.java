@@ -69,6 +69,11 @@ public class MyServerSocket {
                 client.SendUpdate();
         }
     }
+    public void setPathToAllThread(String newPath) {
+        for ( ClientHandler client: clients) {
+            client.setPath(newPath);
+        }
+    }
     ArrayList<file> files = new ArrayList<>();
 
     public ArrayList<file> RequestFileInfo(String id) {

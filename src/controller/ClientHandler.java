@@ -23,11 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import model.RequestType;
-import static model.RequestType.LOGIN;
-import static model.RequestType.REGISTER;
 import model.account;
 import model.file;
-import model.machine;
 import com.google.gson.JsonElement;
 import java.io.DataInputStream;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +41,14 @@ public class ClientHandler implements Runnable {
     private MyServerSocket myServer;
     private String path = "";
     private ArrayList<file> files = new ArrayList<>();
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public String getId() {
         return id;
@@ -117,15 +122,6 @@ public class ClientHandler implements Runnable {
                     processGetAllFilesRequest(jsonData);
                 }
                 if (jsonData.contains("SEND_FILES_FROM_CLIENT")) {
-                    if (jsonData.endsWith("\n")) {
-                        System.out.println("ket thuc voi n");
-
-//                        jsonData = jsonData.replace("\n", "").replace("\r", "");
-//                        if(jsonData.endsWith("}")) System.out.println("ket thuc dung");
-//                        else System.out.println("ket thuc sai");
-                    } else {
-                        //writer.println("LACK_INFORMATION");
-                    }
                     System.out.println(jsonData);
                     handleReceiveAllFilesResponse(jsonData, new BufferedReader(new InputStreamReader(mySocket.getInputStream())), writer);
 
@@ -303,11 +299,13 @@ public class ClientHandler implements Runnable {
                     if (!serverFileMD5.equals(fileMD5)) {
                         // Nếu MD5 khác nhau, ghi chú lại thông tin file
                         markedFiles.put(fileName, fileMD5);
+                        log_controller.getInstance().modifyFile(id, fileName);
                     }
                     // Nếu MD5 giống nhau, không cần làm gì cả
                 } else {
                     // Nếu file không tồn tại, ghi chú lại thông tin file
                     markedFiles.put(fileName, fileMD5);
+                    log_controller.getInstance().createFile(id, fileName);
                 }
             }
             cleanupServerFiles(filesArray);
@@ -341,6 +339,7 @@ public class ClientHandler implements Runnable {
                 // Nếu không tìm thấy trong danh sách gửi từ client, xóa file trên server
                 if (!found) {
                     serverFile.delete();
+                    log_controller.getInstance().deleteFile(id, serverFileName);
                 }
             }
         }
@@ -429,7 +428,7 @@ public class ClientHandler implements Runnable {
 
         try {
             // Construct the file path
-            String filePath = path + "\\" + fileName;
+            String filePath = path + File.separator + fileName;
 
             // Create a FileOutputStream to save the file
             fileOutputStream = new FileOutputStream(filePath);
@@ -447,18 +446,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void handleCheckFingerprintRequest(machine machine1, PrintWriter writer) {
-        if ((machine_controller.getInstance().checkFingerprint(machine1)) != null) {
-            writer.println("Fingerprint right");
-        }
-        writer.println("Fingerprint not found");
-    }
-
-    private void handleInsertDeviceRequest(machine machine1, PrintWriter writer) {
-        if (machine_controller.getInstance().insertDevice(machine1) > 0) {
-            writer.println("hehe, da them mot may");
-        }
-    }
+   
 
     private void handleLoginRequest(account user, PrintWriter writer) {
         if (account_controller.getInstance().checkLogin(user)) {
